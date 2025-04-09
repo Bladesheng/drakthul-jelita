@@ -5,11 +5,11 @@
 
 	<div class="m-4 grow">
 		@if (session('status') === 'screenshot-updated')
-			<p class="bg-green-500">Screenshot updated</p>
+			<x-alert-success class="mb-4">Screenshot updated successfully</x-alert-success>
 		@endif
 
 		@if (session('status') === 'screenshot-deleted')
-			<p class="bg-green-500">Screenshot deleted</p>
+			<x-alert-success class="mb-4">Screenshot deleted successfully</x-alert-success>
 		@endif
 
 		<div class="flex flex-col gap-6">
