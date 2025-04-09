@@ -1,8 +1,18 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Storage;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+/**
+ * Rolling database backup
+ */
+Schedule::call(function () {
+	$dbPath = database_path('database.sqlite');
+	if (!file_exists($dbPath)) {
+		return;
+	}
+
+	$s3Path = 'db/database-' . now()->day . '.sqlite';
+
+	Storage::disk('s3')->put($s3Path, file_get_contents($dbPath));
+})->daily();
