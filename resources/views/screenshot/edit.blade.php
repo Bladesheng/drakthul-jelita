@@ -1,7 +1,7 @@
 <x-layouts.app>
 	<main class="relative flex grow flex-col items-center justify-center gap-8 md:flex-row">
 		<img
-			src="https://pub-75460161779c438eb618ae76b29afd5c.r2.dev/{{ $screenshot->path }}"
+			src="{{ config('filesystems.cdn_url') }}/{{ $screenshot->path }}"
 			alt="{{ $screenshot->wow_name }}"
 			class="screenshot w-64 rounded shadow"
 		/>
