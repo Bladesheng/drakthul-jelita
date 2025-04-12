@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
@@ -11,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $size
  * @property string $wow_name
  * @property string $wow_class
+ *
+ * @mixin Eloquent
  */
 class Screenshot extends Model
 {
