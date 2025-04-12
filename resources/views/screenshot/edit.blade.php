@@ -44,7 +44,7 @@
 									class="radio"
 								/>
 
-								<label for="wowClass-{{ $wowClass->id }}" class="capitalize">
+								<label for="wowClassId-{{ $wowClass->id }}" class="capitalize">
 									{{ $wowClass->name }}
 								</label>
 							</div>
