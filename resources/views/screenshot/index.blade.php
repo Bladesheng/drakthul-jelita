@@ -26,8 +26,8 @@
 
 					(
 					<span class="inline-flex gap-2">
-						@foreach ($screenshots->sortByDesc(fn ($group) => $group->count()) as $className => $classScreenshots)
-							<span style="color: {{ array_column($wowClasses, 'color', 'name')[$className] }}">
+						@foreach ($screenshots->sortByDesc(fn ($group) => $group->count()) as $wowClass => $classScreenshots)
+							<span style="color: {{ $classScreenshots[0]->wowClass->color }}">
 								{{ $classScreenshots->count() }}
 							</span>
 						@endforeach
@@ -41,13 +41,13 @@
 					<div>
 						<div
 							class="mb-4 text-center text-lg font-bold capitalize"
-							style="color: {{ $wowClass['color'] }}"
+							style="color: {{ $wowClass->color }}"
 						>
-							{{ $wowClass['name'] }}
+							{{ $wowClass->name }}
 						</div>
 
 						<div class="flex flex-col gap-1">
-							@foreach ($screenshots[$wowClass['name']] ?? [] as $screenshot)
+							@foreach ($screenshots[$wowClass->id] ?? [] as $screenshot)
 								@if (request()->attributes->get('isAdmin'))
 									<a
 										href="{{ route('screenshots.edit', $screenshot) }}"

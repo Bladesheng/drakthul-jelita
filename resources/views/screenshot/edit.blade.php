@@ -33,24 +33,24 @@
 
 					<div class="flex flex-col gap-1.5">
 						@foreach ($wowClasses as $wowClass)
-							<div class="flex items-center gap-1" style="color: {{ $wowClass['color'] }}">
+							<div class="flex items-center gap-1" style="color: {{ $wowClass->color }}">
 								<input
 									type="radio"
-									name="wowClass"
-									id="wowClass-{{ $wowClass['color'] }}"
-									value="{{ $wowClass['name'] }}"
+									name="wowClassId"
+									id="wowClassId-{{ $wowClass->id }}"
+									value="{{ $wowClass->id }}"
 									required
-									{{ old('wowClass', $screenshot->wow_class) === $wowClass['name'] ? 'checked' : '' }}
+									{{ old('wowClassId', $screenshot->wowClass->id) === $wowClass->id ? 'checked' : '' }}
 									class="radio"
 								/>
 
-								<label for="wowClass-{{ $wowClass['color'] }}" class="capitalize">
-									{{ $wowClass['name'] }}
+								<label for="wowClass-{{ $wowClass->id }}" class="capitalize">
+									{{ $wowClass->name }}
 								</label>
 							</div>
 						@endforeach
 
-						<x-validation-error field="wowClass" />
+						<x-validation-error field="wowClassId" />
 					</div>
 
 					<button type="submit" class="btn btn-primary self-stretch">Save</button>

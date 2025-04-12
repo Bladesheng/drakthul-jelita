@@ -31,7 +31,7 @@ document.addEventListener('paste', (e) => {
 function checkNameClassCombination() {
 	const formData = new FormData(document.querySelector<HTMLFormElement>('.uploadForm')!);
 	const wowName = formData.get('wowName') as string | null;
-	const wowClass = formData.get('wowClass') as string | null;
+	const wowClassId = formData.get('wowClassId') as string | null;
 
 	clearTimeout(timeout);
 
@@ -39,13 +39,13 @@ function checkNameClassCombination() {
 	abortController = new AbortController();
 	const signal = abortController.signal;
 
-	if (!wowName || !wowClass || wowName.length < 2) {
+	if (!wowName || !wowClassId || wowName.length < 2) {
 		return;
 	}
 
 	timeout = setTimeout(async () => {
 		try {
-			const res = await fetch(`/screenshots/search?wowName=${wowName}&wowClass=${wowClass}`, {
+			const res = await fetch(`/screenshots/search?wowName=${wowName}&wowClassId=${wowClassId}`, {
 				signal,
 			});
 			const data = await res.json();

@@ -12,11 +12,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $mime_type
  * @property int $size
  * @property string $wow_name
- * @property string $wow_class
+ * @property int $wow_class_id
  *
  * @mixin Eloquent
  */
 class Screenshot extends Model
 {
-    //
+	public function wowClass(): BelongsTo
+	{
+		return $this->belongsTo(WowClass::class);
+	}
 }

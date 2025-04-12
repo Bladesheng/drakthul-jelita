@@ -38,33 +38,27 @@
 
 					<div class="flex flex-col gap-1.5">
 						@foreach ($wowClasses as $wowClass)
-							<div class="flex items-center gap-1" style="color: {{ $wowClass['color'] }}">
+							<div class="flex items-center gap-1" style="color: {{ $wowClass->color }}">
 								<input
 									type="radio"
-									name="wowClass"
-									id="wowClass-{{ $wowClass['color'] }}"
-									value="{{ $wowClass['name'] }}"
+									name="wowClassId"
+									id="wowClassId-{{ $wowClass->id }}"
+									value="{{ $wowClass->id }}"
 									required
-									{{ old('wowClass') === $wowClass['name'] ? 'checked' : '' }}
+									{{ old('wowClassId') === $wowClass->id ? 'checked' : '' }}
 									class="radio"
 								/>
 
-								<label for="wowClass-{{ $wowClass['color'] }}" class="capitalize">
-									{{ $wowClass['name'] }}
+								<label for="wowClassId-{{ $wowClass->id }}" class="capitalize">
+									{{ $wowClass->name }}
 								</label>
 							</div>
 						@endforeach
 
-						<x-validation-error field="wowClass" />
+						<x-validation-error field="wowClassId" />
 					</div>
 
-					<input
-						type="file"
-						name="screenshot"
-						id="screenshot"
-						required
-						class="file-input file-input-ghos"
-					/>
+					<input type="file" name="screenshot" id="screenshot" required class="file-input" />
 
 					<x-validation-error field="screenshot" />
 

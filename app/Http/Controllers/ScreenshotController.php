@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Screenshot;
+use App\Models\WowClass;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,36 +13,21 @@ use Illuminate\View\View;
 
 class ScreenshotController extends Controller
 {
-	private const WOW_CLASSES = [
-		['name' => 'death knight', 'color' => '#C41E3A'],
-		['name' => 'demon hunter', 'color' => '#A330C9'],
-		['name' => 'druid', 'color' => '#FF7C0A'],
-		['name' => 'evoker', 'color' => '#33937F'],
-		['name' => 'hunter', 'color' => '#AAD372'],
-		['name' => 'mage', 'color' => '#3FC7EB'],
-		['name' => 'monk', 'color' => '#00FF98'],
-		['name' => 'paladin', 'color' => '#F48CBA'],
-		['name' => 'priest', 'color' => '#FFFFFF'],
-		['name' => 'rogue', 'color' => '#FFF468'],
-		['name' => 'shaman', 'color' => '#0070DD'],
-		['name' => 'warlock', 'color' => '#8788EE'],
-		['name' => 'warrior', 'color' => '#C69B6D'],
-	];
-
 	/**
 	 * Display a listing of the resource.
 	 */
 	public function index(): View
 	{
-		$screenshots = Screenshot::select('id', 'path', 'wow_name', 'wow_class')
+		$screenshots = Screenshot::with('wowClass')
+			->select('id', 'path', 'wow_name', 'wow_class', 'wow_class_id')
 			->orderBy('wow_name')
 			->get()
-			->groupBy('wow_class')
+			->groupBy('wow_class_id')
 			->sortKeys();
 
 		return view('screenshot.index', [
 			'screenshots' => $screenshots,
-			'wowClasses' => self::WOW_CLASSES,
+			'wowClasses' => WowClass::all(),
 		]);
 	}
 
@@ -51,7 +37,7 @@ class ScreenshotController extends Controller
 	public function create(): View
 	{
 		return view('screenshot.create', [
-			'wowClasses' => self::WOW_CLASSES,
+			'wowClasses' => WowClass::all(),
 		]);
 	}
 
@@ -66,14 +52,14 @@ class ScreenshotController extends Controller
 
 		$validated = $request->validate([
 			'wowName' => 'required|min:2|max:16',
-			'wowClass' => 'required',
+			'wowClassId' => 'required|exists:wow_classes,id',
 			'screenshot' => ['required', File::image()->max('1mb')],
 		]);
 
 		$wowName = $validated['wowName'];
-		$wowClass = $validated['wowClass'];
+		$wowClassId = $validated['wowClassId'];
 
-		$exists = Screenshot::where('wow_name', $wowName)->where('wow_class', $wowClass)->exists();
+		$exists = Screenshot::where('wow_name', $wowName)->where('wow_class_id', $wowClassId)->exists();
 		if ($exists) {
 			return back()
 				->withErrors(['wowName' => 'Screenshot with that name and class already exists'])
@@ -88,7 +74,7 @@ class ScreenshotController extends Controller
 		$screenshot->mime_type = $file->getClientMimeType();
 		$screenshot->size = $file->getSize();
 		$screenshot->wow_name = $wowName;
-		$screenshot->wow_class = $wowClass;
+		$screenshot->wowClass()->associate($wowClassId);
 		$screenshot->save();
 
 		return to_route('screenshots.create')->with('status', 'screenshot-created');
@@ -109,7 +95,7 @@ class ScreenshotController extends Controller
 	{
 		return view('screenshot.edit', [
 			'screenshot' => $screenshot,
-			'wowClasses' => self::WOW_CLASSES,
+			'wowClasses' => WowClass::all(),
 		]);
 	}
 
@@ -124,13 +110,13 @@ class ScreenshotController extends Controller
 
 		$validated = $request->validate([
 			'wowName' => 'required|min:2|max:16',
-			'wowClass' => 'required',
+			'wowClassId' => 'required|exists:wow_classes,id',
 		]);
 
 		$wowName = $validated['wowName'];
-		$wowClass = $validated['wowClass'];
+		$wowClassId = $validated['wowClassId'];
 
-		$exists = Screenshot::where('wow_name', $wowName)->where('wow_class', $wowClass)->exists();
+		$exists = Screenshot::where('wow_name', $wowName)->where('wow_class_id', $wowClassId)->exists();
 		if ($exists) {
 			return back()
 				->withErrors(['wowName' => 'Screenshot with that name and class already exists'])
@@ -138,7 +124,7 @@ class ScreenshotController extends Controller
 		}
 
 		$screenshot->wow_name = $wowName;
-		$screenshot->wow_class = $wowClass;
+		$screenshot->wowClass()->associate($wowClassId);
 		$screenshot->save();
 
 		return to_route('screenshots.index')->with('status', 'screenshot-updated');
@@ -159,7 +145,7 @@ class ScreenshotController extends Controller
 	public function search(Request $request): JsonResponse
 	{
 		$screenshots = Screenshot::where('wow_name', $request->query('wowName'))
-			->where('wow_class', $request->query('wowClass'))
+			->where('wow_class_id', $request->query('wowClassId'))
 			->get();
 
 		return response()->json($screenshots);
