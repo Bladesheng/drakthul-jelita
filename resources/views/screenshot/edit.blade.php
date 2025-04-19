@@ -53,14 +53,21 @@
 						<x-validation-error field="wowClassId" />
 					</div>
 
-					<button type="submit" class="btn btn-primary self-stretch">Save</button>
+					<div class="flex justify-between gap-2">
+						<button type="submit" class="btn btn-primary flex-1">Save</button>
+						<button type="submit" class="btn btn-error flex-1" form="deleteScreenshot">
+							Delete
+						</button>
+					</div>
 				</form>
 
-				<form method="POST" action="{{ route('screenshots.destroy', $screenshot) }}">
+				<form
+					method="POST"
+					action="{{ route('screenshots.destroy', $screenshot) }}"
+					id="deleteScreenshot"
+				>
 					@csrf
 					@method('delete')
-
-					<button type="submit" class="btn btn-error w-full">Delete</button>
 				</form>
 			</div>
 		</div>
