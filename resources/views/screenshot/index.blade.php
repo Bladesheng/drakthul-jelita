@@ -55,17 +55,23 @@
 										data-wow-name="{{ $screenshot->wow_name }}"
 									>
 										<img
+											loading="lazy"
 											src="{{ config('filesystems.cdn_url') }}/{{ $screenshot->path }}"
+											width="{{ $screenshot->width }}"
+											height="{{ $screenshot->height }}"
 											alt="{{ $screenshot->wow_name }}"
 											class="w-full"
 										/>
 									</a>
 								@else
 									<img
-										class="screenshot"
-										data-wow-name="{{ $screenshot->wow_name }}"
+										loading="lazy"
 										src="{{ config('filesystems.cdn_url') }}/{{ $screenshot->path }}"
+										width="{{ $screenshot->width }}"
+										height="{{ $screenshot->height }}"
 										alt="{{ $screenshot->wow_name }}"
+										class="screenshot w-full"
+										data-wow-name="{{ $screenshot->wow_name }}"
 									/>
 								@endif
 							@endforeach

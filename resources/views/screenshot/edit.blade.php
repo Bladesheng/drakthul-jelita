@@ -3,6 +3,8 @@
 		<img
 			src="{{ config('filesystems.cdn_url') }}/{{ $screenshot->path }}"
 			alt="{{ $screenshot->wow_name }}"
+			width="{{ $screenshot->width }}"
+			height="{{ $screenshot->height }}"
 			class="screenshot w-64 rounded shadow"
 		/>
 

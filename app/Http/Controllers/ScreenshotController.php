@@ -20,7 +20,7 @@ class ScreenshotController extends Controller
 	public function index(): View
 	{
 		$screenshots = Screenshot::with('wowClass')
-			->select('id', 'path', 'wow_name', 'wow_class', 'wow_class_id')
+			->select('id', 'path', 'wow_name', 'wow_class', 'wow_class_id', 'width', 'height')
 			->orderBy('wow_name')
 			->get()
 			->groupBy('wow_class_id')
