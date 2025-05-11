@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $size
  * @property string $wow_name
  * @property int $wow_class_id
+ * @property int $width
+ * @property int $height
  *
  * @mixin Eloquent
  */

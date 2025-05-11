@@ -8,9 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Illuminate\Support\Str;
 
 class ScreenshotController extends Controller
 {
@@ -99,11 +99,6 @@ class ScreenshotController extends Controller
 				->withInput();
 		}
 
-		//		$width = imagesx($img);
-		//		$height = imagesy($img);
-
-		imagedestroy($img);
-
 		$avifFile = new \Illuminate\Http\File($avifPath);
 		$path = Storage::disk('s3')->putFile($avifFile);
 
@@ -113,8 +108,11 @@ class ScreenshotController extends Controller
 		$screenshot->size = $avifFile->getSize();
 		$screenshot->wow_name = $wowName;
 		$screenshot->wowClass()->associate($wowClassId);
+		$screenshot->width = imagesx($img);
+		$screenshot->height = imagesy($img);
 		$screenshot->save();
 
+		imagedestroy($img);
 		unlink($avifPath);
 
 		return to_route('screenshots.create')->with('status', 'screenshot-created');
