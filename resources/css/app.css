@@ -11,7 +11,10 @@
 		'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-@plugin "daisyui";
+@plugin "daisyui" {
+	themes: dark --default;
+}
+
 @plugin "@iconify/tailwind4";
 
 @custom-variant dark (&:where(.dark, .dark *));
