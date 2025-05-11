@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class ScreenshotController extends Controller
 {
@@ -67,15 +68,54 @@ class ScreenshotController extends Controller
 		}
 
 		$file = $validated['screenshot'];
-		$path = Storage::disk('s3')->putFile($file);
+
+		$mimeType = $file->getClientMimeType();
+		$tempPath = $file->getRealPath();
+
+		$img = match ($mimeType) {
+			'image/png' => imagecreatefrompng($tempPath),
+			'image/jpeg' => imagecreatefromjpeg($tempPath),
+			'image/webp' => imagecreatefromwebp($tempPath),
+			'image/avif' => imagecreatefromavif($tempPath),
+			default => null,
+		};
+
+		if (!$img) {
+			return back()
+				->withErrors(['screenshot' => 'Unsupported image format'])
+				->withInput();
+		}
+
+		$avifPath = sys_get_temp_dir() . '/' . Str::uuid() . '.avif';
+
+		/**
+		 * AVIF 90 is as close as it gets to the original quality.
+		 * Webp 100 has similar size, and sometimes similar quality too, but other times AVIF just
+		 * looks better.
+		 */
+		if (!imageavif($img, $avifPath, 90)) {
+			return back()
+				->withErrors(['screenshot' => 'Failed to convert image to AVIF'])
+				->withInput();
+		}
+
+		//		$width = imagesx($img);
+		//		$height = imagesy($img);
+
+		imagedestroy($img);
+
+		$avifFile = new \Illuminate\Http\File($avifPath);
+		$path = Storage::disk('s3')->putFile($avifFile);
 
 		$screenshot = new Screenshot();
 		$screenshot->path = $path;
-		$screenshot->mime_type = $file->getClientMimeType();
-		$screenshot->size = $file->getSize();
+		$screenshot->mime_type = $avifFile->getMimeType();
+		$screenshot->size = $avifFile->getSize();
 		$screenshot->wow_name = $wowName;
 		$screenshot->wowClass()->associate($wowClassId);
 		$screenshot->save();
+
+		unlink($avifPath);
 
 		return to_route('screenshots.create')->with('status', 'screenshot-created');
 	}
